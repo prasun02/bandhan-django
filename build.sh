@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -o errexit
+
+python -m pip install -r requirements.txt
+
+python manage.py collectstatic --noinput
+python manage.py migrate
+
+python manage.py seed_demo_data
+python manage.py import_demo_products
+python manage.py ensure_superuser

@@ -1,0 +1,1 @@
+{% extends "base.html" %}{% block content %}<section class="section"><h1>Order placed</h1><p>Your order number is <strong>{{ order_number }}</strong>.</p><a class="btn" href="{% url 'orders:track' %}">Track Order</a></section>{% endblock %}

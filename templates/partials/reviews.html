@@ -1,0 +1,1 @@
+<div>{% for review in product.reviews.all %}{% if review.status == "approved" %}<article><strong>{{ review.title }}</strong><p>{{ review.text }}</p></article>{% endif %}{% endfor %}</div>

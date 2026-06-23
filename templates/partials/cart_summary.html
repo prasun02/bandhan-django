@@ -1,0 +1,35 @@
+{% load money %}
+<div id="cart-summary" class="grid gap-4">
+  {% for item in items %}
+    <article class="cart-line">
+      {% with image=item.product.images.first %}
+        {% if image %}<img class="aspect-[3/4] w-24 rounded-lg object-cover" src="{{ image.image.url }}" alt="{{ image.alt_text }}">{% else %}<div class="image-fallback !aspect-[3/4] !w-24 rounded-lg">Bandhan</div>{% endif %}
+      {% endwith %}
+      <div>
+        <h2 class="font-serif text-xl text-burgundy">{{ item.product.name }}</h2>
+        <p class="text-sm text-grey">SKU: {% if item.variant %}{{ item.variant.sku }}{% else %}{{ item.product.sku }}{% endif %}</p>
+        <p class="text-sm text-grey">{% if item.variant %}{{ item.variant.size }} / {{ item.variant.colour }} - stock {{ item.variant.available_stock }}{% else %}Stock {{ item.product.stock }}{% endif %}</p>
+        <p class="mt-2 text-sm">{{ item.unit_price_paisa|money }} each</p>
+      </div>
+      <div class="grid gap-3 md:justify-items-end">
+        <strong class="price">{{ item.subtotal_paisa|money }}</strong>
+        <div class="inline-flex overflow-hidden rounded-lg border border-border bg-white">
+          <button class="px-3 py-2 font-bold" hx-post="{% url 'cart:update_item' item.id 'decrease' %}" hx-target="#cart-summary" hx-disabled-elt="this" type="button">-</button>
+          <span class="min-w-10 px-3 py-2 text-center font-bold">{{ item.quantity }}</span>
+          <button class="px-3 py-2 font-bold" hx-post="{% url 'cart:update_item' item.id 'increase' %}" hx-target="#cart-summary" hx-disabled-elt="this" type="button">+</button>
+        </div>
+        <button class="text-sm font-bold text-error" hx-post="{% url 'cart:update_item' item.id 'remove' %}" hx-target="#cart-summary" hx-disabled-elt="this" type="button">Remove</button>
+      </div>
+    </article>
+  {% empty %}
+    <div class="card text-center">
+      <h2 class="font-serif text-2xl text-burgundy">Your cart is empty</h2>
+      <p class="mt-2 text-grey">Explore sarees, salwar kameez, kurtis, and festive collections.</p>
+      <a class="btn mt-5" href="{% url 'catalog:shop' %}">Start shopping</a>
+    </div>
+  {% endfor %}
+  <div class="card">
+    <div class="summary-row"><span>Subtotal</span><strong>{{ subtotal_paisa|money }}</strong></div>
+    <div class="summary-row"><span>Total quantity</span><strong>{{ total_quantity }}</strong></div>
+  </div>
+</div>

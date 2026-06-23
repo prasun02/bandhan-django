@@ -1,0 +1,86 @@
+{% extends "base.html" %}{% load money %}
+{% block title %}Checkout - Bandhan{% endblock %}
+{% block content %}
+<section class="checkout-grid">
+  <form id="checkout-form" method="post" class="card grid gap-8" novalidate>
+    {% csrf_token %}
+    {{ form.idempotency_token }}
+    <div>
+      <p class="eyebrow">Checkout</p>
+      <h1 class="section-title mb-2">Delivery and payment</h1>
+      <p class="text-sm text-grey">All totals are recalculated securely on the server before your order is created.</p>
+    </div>
+    {% include "components/form_errors.html" %}
+
+    <section>
+      <h2 class="mb-4 font-serif text-2xl text-burgundy">Customer information</h2>
+      <div class="checkout-field-grid">
+        {% include "components/form_field.html" with field=form.email %}
+        {% include "components/form_field.html" with field=form.full_name %}
+        {% include "components/form_field.html" with field=form.phone %}
+        {% include "components/form_field.html" with field=form.alternative_phone %}
+      </div>
+    </section>
+
+    <section>
+      <h2 class="mb-4 font-serif text-2xl text-burgundy">Delivery address</h2>
+      <div class="checkout-field-grid">
+        {% include "components/form_field.html" with field=form.division %}
+        {% include "components/form_field.html" with field=form.district %}
+        {% include "components/form_field.html" with field=form.upazila %}
+        {% include "components/form_field.html" with field=form.area %}
+        {% include "components/form_field.html" with field=form.road %}
+        {% include "components/form_field.html" with field=form.house %}
+        {% include "components/form_field.html" with field=form.postal_code %}
+        {% include "components/form_field.html" with field=form.landmark %}
+      </div>
+      <div class="mt-4 grid gap-4">
+        {% include "components/form_field.html" with field=form.delivery_instructions %}
+        {% include "components/form_field.html" with field=form.label %}
+      </div>
+    </section>
+
+    <section>
+      <h2 class="mb-4 font-serif text-2xl text-burgundy">Delivery and payment</h2>
+      <div class="checkout-field-grid">
+        {% include "components/form_field.html" with field=form.delivery_zone %}
+        {% include "components/form_field.html" with field=form.payment_method %}
+      </div>
+      <div class="mt-4">
+        {% include "components/form_field.html" with field=form.terms %}
+      </div>
+    </section>
+
+    <button class="btn w-full lg:hidden" type="submit">Place COD order</button>
+  </form>
+
+  <aside class="sticky-summary">
+    <h2 class="mb-5 font-serif text-2xl text-burgundy">Order summary</h2>
+    <div class="grid gap-4">
+      {% for item in items %}
+        <div class="grid grid-cols-[72px_1fr] gap-3">
+          {% with image=item.product.images.first %}
+            {% if image %}<img class="aspect-[3/4] rounded-lg object-cover" src="{{ image.image.url }}" alt="{{ image.alt_text }}">{% else %}<div class="image-fallback !aspect-[3/4] rounded-lg">Bandhan</div>{% endif %}
+          {% endwith %}
+          <div>
+            <strong class="block leading-tight">{{ item.product.name }}</strong>
+            <span class="text-sm text-grey">{% if item.variant %}{{ item.variant.size }} / {{ item.variant.colour }}{% else %}Standard{% endif %}</span>
+            <p class="text-sm">{{ item.quantity }} x {{ item.unit_price_paisa|money }}</p>
+          </div>
+        </div>
+      {% empty %}
+        <div class="rounded-lg bg-soft-cream p-4 text-sm text-grey">Your cart is empty.</div>
+      {% endfor %}
+    </div>
+    <div class="mt-5">
+      <div class="summary-row"><span>Subtotal</span><strong>{{ subtotal_paisa|money }}</strong></div>
+      <div class="summary-row"><span>Coupon discount</span><strong>Calculated at checkout</strong></div>
+      <div class="summary-row"><span>Delivery charge</span><strong>Based on zone</strong></div>
+      <div class="summary-row"><span>Payment fee</span><strong>৳0</strong></div>
+      <div class="flex items-center justify-between pt-4 text-lg"><span>Grand total</span><strong class="text-burgundy">Finalized on submit</strong></div>
+    </div>
+    <button class="btn mt-6 hidden w-full lg:inline-flex" form="checkout-form" type="submit">Place COD order</button>
+    <p class="mt-4 rounded-lg bg-soft-cream p-3 text-sm text-grey">Cash on Delivery is active. Online payments require verified provider callbacks before paid status is allowed.</p>
+  </aside>
+</section>
+{% endblock %}

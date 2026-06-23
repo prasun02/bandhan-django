@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Shop Bandhan{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+    <div>
+      <p class="eyebrow">Bandhan catalogue</p>
+      <h1 class="section-title mb-2">Shop collections</h1>
+      <p class="text-grey">Sarees, salwar kameez, lehengas, kurtis, bridal wear, and accessories.</p>
+    </div>
+    <form class="flex w-full gap-3 md:max-w-lg" hx-get="{% url 'catalog:shop' %}" hx-target="#products" method="get">
+      <input class="form-input" name="q" value="{{ query }}" placeholder="Search products">
+      <button class="btn" type="submit">Search</button>
+    </form>
+  </div>
+  <div id="products">{% include "partials/product_grid.html" %}</div>
+</section>
+{% endblock %}

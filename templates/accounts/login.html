@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Login - Bandhan{% endblock %}
+{% block content %}
+<section class="auth-shell">
+  <div class="auth-panel">
+    <div class="self-end">
+      <p class="eyebrow text-gold">Secure account access</p>
+      <h1 class="max-w-xl font-serif text-5xl font-semibold">Welcome back to Bandhan</h1>
+      <p class="mt-5 max-w-md text-soft-cream">Track orders, manage saved addresses, and keep your festive favorites close.</p>
+    </div>
+  </div>
+  <div class="auth-card">
+    <p class="eyebrow">Customer login</p>
+    <h1 class="section-title mb-2">Sign in</h1>
+    <p class="mb-6 text-sm text-grey">Use your email and password to continue.</p>
+    {% include "components/form_errors.html" %}
+    <form method="post" class="grid gap-5" x-data="{show:false}">
+      {% csrf_token %}
+      {% include "components/form_field.html" with field=form.username %}
+      <div>
+        <label class="form-label" for="{{ form.password.id_for_label }}">Password<span class="required">*</span></label>
+        <div class="mt-2 flex rounded-lg border border-border bg-white shadow-sm focus-within:border-gold focus-within:ring-2 focus-within:ring-gold/20">
+          <input class="w-full rounded-l-lg border-0 bg-transparent px-4 py-3 outline-none" :type="show ? 'text' : 'password'" name="{{ form.password.html_name }}" id="{{ form.password.id_for_label }}" autocomplete="current-password" placeholder="Your password" required>
+          <button class="px-4 text-sm font-bold text-burgundy" type="button" @click="show=!show" x-text="show ? 'Hide' : 'Show'"></button>
+        </div>
+        {% for error in form.password.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+      </div>
+      <div class="flex flex-wrap items-center justify-between gap-3 text-sm">
+        <label class="inline-flex items-center gap-2"><input class="form-checkbox" type="checkbox" name="remember"> Remember me</label>
+        <a class="font-bold text-burgundy" href="{% url 'accounts:password_reset' %}">Forgot password?</a>
+      </div>
+      <button class="btn w-full" type="submit">Login securely</button>
+      <p class="text-center text-sm text-grey">New to Bandhan? <a class="font-bold text-burgundy" href="{% url 'accounts:register' %}">Create an account</a></p>
+      <a class="btn-outline w-full" href="{% url 'checkout:checkout' %}">Continue as guest</a>
+    </form>
+  </div>
+</section>
+{% endblock %}

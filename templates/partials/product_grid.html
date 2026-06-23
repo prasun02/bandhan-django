@@ -1,0 +1,37 @@
+{% load money %}
+<div class="product-grid">
+{% for product in products %}
+  <article class="product-card">
+    <a href="{{ product.get_absolute_url }}" class="block">
+      {% with image=product.images.first %}
+        {% if image %}<img class="product-media" src="{{ image.image.url }}" alt="{{ image.alt_text }}">{% else %}<div class="image-fallback">Bandhan</div>{% endif %}
+      {% endwith %}
+    </a>
+    <div class="product-body">
+      <div class="flex flex-wrap gap-2">
+        {% if product.is_new_arrival %}<span class="pill">New</span>{% endif %}
+        {% if product.is_best_seller %}<span class="pill">Best Seller</span>{% endif %}
+        {% if product.is_sale %}<span class="pill">Sale</span>{% endif %}
+      </div>
+      <h3 class="min-h-12 font-serif text-xl text-burgundy"><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h3>
+      <p class="text-sm text-grey">{{ product.category.name }}</p>
+      <div class="mt-auto flex items-end justify-between gap-3">
+        <p>{% if product.sale_price_paisa %}<span class="old-price">{{ product.regular_price_paisa|money }}</span><br>{% endif %}<strong class="price">{{ product.current_price_paisa|money }}</strong></p>
+        <span class="text-xs font-bold {% if product.stock %}text-success{% else %}text-error{% endif %}">{% if product.stock %}In stock{% else %}Out of stock{% endif %}</span>
+      </div>
+      <div class="grid grid-cols-2 gap-2 pt-2">
+        <a class="btn-outline !px-3" href="{{ product.get_absolute_url }}">View</a>
+        <form method="post" action="{% url 'catalog:toggle_wishlist' product.id %}" hx-post="{% url 'catalog:toggle_wishlist' product.id %}" hx-target="this">
+          {% csrf_token %}
+          <button class="btn-outline w-full !px-3" type="submit">Wishlist</button>
+        </form>
+      </div>
+    </div>
+  </article>
+{% empty %}
+  <div class="card col-span-full text-center">
+    <h2 class="font-serif text-2xl text-burgundy">No products found</h2>
+    <p class="mt-2 text-grey">Try another search or browse the full collection.</p>
+  </div>
+{% endfor %}
+</div>

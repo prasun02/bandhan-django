@@ -1,0 +1,24 @@
+{% extends "base.html" %}{% load money %}
+{% block title %}Cart - Bandhan{% endblock %}
+{% block content %}
+<section class="section grid gap-8 lg:grid-cols-[1fr_380px]">
+  <div>
+    <p class="eyebrow">Shopping cart</p>
+    <h1 class="section-title">Your selected pieces</h1>
+    {% include "partials/cart_summary.html" %}
+  </div>
+  <aside class="sticky-summary h-fit">
+    <h2 class="mb-4 font-serif text-2xl text-burgundy">Price summary</h2>
+    <div class="summary-row"><span>Subtotal</span><strong>{{ subtotal_paisa|money }}</strong></div>
+    <div class="summary-row"><span>Total items</span><strong>{{ total_quantity }}</strong></div>
+    <form class="mt-5 grid gap-3" hx-post="{% url 'cart:apply_coupon' %}" hx-target="#cart-summary" method="post">
+      {% csrf_token %}
+      <label class="form-label" for="coupon-code">Coupon</label>
+      <input id="coupon-code" class="form-input" name="code" placeholder="WELCOME10">
+      <button class="btn-outline" type="submit">Apply coupon</button>
+    </form>
+    <a class="btn mt-5 w-full" href="{% url 'checkout:checkout' %}">Continue to checkout</a>
+    <a class="btn-outline mt-3 w-full" href="{% url 'catalog:shop' %}">Continue shopping</a>
+  </aside>
+</section>
+{% endblock %}

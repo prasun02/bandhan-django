@@ -1,0 +1,1 @@
+{% extends "base.html" %}{% block content %}<section class="section"><h1>Staff Dashboard</h1>{% for order in recent_orders %}<p>{{ order.number }} - {{ order.get_status_display }}</p>{% endfor %}</section>{% endblock %}

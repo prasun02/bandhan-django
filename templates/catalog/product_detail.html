@@ -1,0 +1,64 @@
+{% extends "base.html" %}{% load money %}
+{% block title %}{{ product.seo_title|default:product.name }} - Bandhan{% endblock %}
+{% block meta_description %}{{ product.seo_description|default:product.short_description }}{% endblock %}
+{% block content %}
+<section class="section grid gap-10 lg:grid-cols-[1fr_0.92fr]" x-data="{qty:1}">
+  <div class="grid gap-4">
+    {% with image=product.images.first %}
+      {% if image %}<img class="aspect-[3/4] w-full rounded-2xl object-cover shadow-soft" src="{{ image.image.url }}" alt="{{ image.alt_text }}">{% else %}<div class="image-fallback rounded-2xl text-lg">Bandhan</div>{% endif %}
+    {% endwith %}
+    <div class="grid grid-cols-4 gap-3">
+      {% for image in product.images.all|slice:":4" %}
+        <img class="aspect-square rounded-lg object-cover" src="{{ image.image.url }}" alt="{{ image.alt_text }}">
+      {% empty %}
+        <div class="image-fallback !aspect-square rounded-lg">B</div>
+      {% endfor %}
+    </div>
+  </div>
+  <div>
+    <p class="eyebrow">{{ product.category.name }}</p>
+    <h1 class="section-title mb-3">{{ product.name }}</h1>
+    <p class="text-sm text-grey">SKU: {{ product.sku }}{% if product.brand %} - {{ product.brand.name }}{% endif %}</p>
+    <div class="mt-5 flex flex-wrap items-baseline gap-3">
+      {% if product.sale_price_paisa %}<span class="old-price">{{ product.regular_price_paisa|money }}</span>{% endif %}
+      <strong class="font-serif text-4xl text-burgundy">{{ product.current_price_paisa|money }}</strong>
+    </div>
+    <p class="mt-4 text-grey">{{ product.short_description }}</p>
+    <div class="mt-5 flex flex-wrap gap-2">
+      <span class="pill">{{ product.fabric|default:"Premium fabric" }}</span>
+      <span class="pill">{{ product.occasion|default:"Every occasion" }}</span>
+      <span class="pill">{% if product.stock %}In stock{% else %}Out of stock{% endif %}</span>
+    </div>
+    <form class="mt-7 grid gap-5" method="post" action="{% url 'cart:add' %}" hx-post="{% url 'cart:add' %}" hx-target="#cart-response">
+      {% csrf_token %}
+      <input type="hidden" name="product_id" value="{{ product.id }}">
+      {% if product.variants.all %}
+        <div class="form-group">
+          <label class="form-label" for="variant">Size and colour<span class="required">*</span></label>
+          <select id="variant" class="form-input" name="variant_id" required>
+            <option value="">Select a variant</option>
+            {% for variant in product.variants.all %}
+              <option value="{{ variant.id }}">{{ variant.size }} / {{ variant.colour }} - stock {{ variant.available_stock }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      {% endif %}
+      <div class="form-group max-w-40">
+        <label class="form-label" for="quantity">Quantity</label>
+        <input id="quantity" class="form-input" type="number" min="1" name="quantity" x-model="qty">
+      </div>
+      <div class="grid gap-3 sm:grid-cols-2">
+        <button class="btn" type="submit">Add to Cart</button>
+        <button class="btn-outline" formaction="{% url 'cart:buy_now' %}" hx-post="{% url 'cart:buy_now' %}" type="submit">Buy Now</button>
+      </div>
+    </form>
+    <div id="cart-response" class="mt-4"></div>
+    <div class="mt-8 grid gap-4">
+      <details class="card" open><summary class="cursor-pointer font-bold text-burgundy">Description</summary><p class="mt-3 text-grey">{{ product.full_description|default:product.short_description }}</p></details>
+      <details class="card"><summary class="cursor-pointer font-bold text-burgundy">Care and package</summary><p class="mt-3 text-grey">{{ product.care_instructions|default:"Handle with care and follow fabric-specific wash guidance." }}</p><p class="mt-2 text-grey">{{ product.package_contents|default:"One selected fashion item." }}</p></details>
+      <details class="card"><summary class="cursor-pointer font-bold text-burgundy">Delivery and returns</summary><p class="mt-3 text-grey">{{ product.estimated_delivery|default:"Delivery depends on zone selection at checkout." }}</p></details>
+    </div>
+  </div>
+</section>
+<section class="section"><h2 class="section-title">Related products</h2>{% include "partials/product_grid.html" with products=related_products %}</section>
+{% endblock %}

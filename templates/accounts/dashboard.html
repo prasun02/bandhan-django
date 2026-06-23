@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section grid gap-6 lg:grid-cols-[260px_1fr]">
+  <aside class="card h-fit">
+    <h2 class="font-serif text-2xl text-burgundy">My Account</h2>
+    <nav class="mt-5 grid gap-2 text-sm font-semibold">
+      <a class="mobile-link" href="{% url 'accounts:dashboard' %}">Dashboard</a>
+      <a class="mobile-link" href="{% url 'accounts:addresses' %}">Addresses</a>
+      <a class="mobile-link" href="{% url 'orders:track' %}">Track Order</a>
+      <a class="mobile-link" href="{% url 'accounts:password_change' %}">Password</a>
+    </nav>
+  </aside>
+  <div class="card">
+    <p class="eyebrow">Welcome</p>
+    <h1 class="section-title">{{ request.user.full_name|default:request.user.email }}</h1>
+    <p class="text-grey">Manage addresses, orders, wishlist, and returns from your Bandhan account.</p>
+  </div>
+</section>
+{% endblock %}
